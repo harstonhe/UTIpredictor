@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic UTI Risk Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow header-card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-0">Dynamic UTI Risk Prediction Model</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <!-- Left Side: Variables (1/3) -->
+            <div class="col-md-4 col-lg-3">
+                <div class="card shadow">
+                    <div class="card-header compact-header">
+                        <h5 class="mb-0">Patient Parameters</h5>
+                    </div>
+                    <div class="card-body compact-body">
+                        <form id="riskForm" class="compact-form" onsubmit="return false;">
+                            <!-- Age -->
+                            <div class="variable-slider mb-3">
+                                <label for="age" class="form-label d-flex justify-content-between">
+                                    <span>Age</span>
+                                    <span class="current-value" id="ageValue">55</span>
+                                </label>
+                                <input type="range" class="form-range" id="age" name="age" min="18" max="90" value="55" oninput="document.getElementById('ageValue').textContent = this.value">
+                            </div>
+                            
+                            <!-- Sex -->
+                            <div class="mb-3">
+                                <label for="sex" class="form-label">Sex</label>
+                                <select class="form-select form-select-sm" id="sex" name="sex" required>
+                                    <option value="0">Female</option>
+                                    <option value="1">Male</option>
+                                </select>
+                            </div>
+                            
+                            <!-- BMI -->
+                            <div class="variable-slider mb-3">
+                                <label for="bmi" class="form-label d-flex justify-content-between">
+                                    <span>BMI</span>
+                                    <span class="current-value" id="bmiValue">24.3</span>
+                                </label>
+                                <input type="range" class="form-range" id="bmi" name="bmi" min="15" max="40" step="0.1" value="24.3" oninput="document.getElementById('bmiValue').textContent = this.value">
+                            </div>
+                            
+                            <!-- NPAR -->
+                            <div class="variable-slider mb-3">
+                                <label for="npar" class="form-label d-flex justify-content-between">
+                                    <span>NPAR</span>
+                                    <span class="current-value" id="nparValue">1.2</span>
+                                </label>
+                                <input type="range" class="form-range" id="npar" name="npar" min="0" max="5" step="0.1" value="1.2" oninput="document.getElementById('nparValue').textContent = this.value">
+                            </div>
+                            
+                            <!-- Urine Leukocyte Esterase -->
+                            <div class="mb-3">
+                                <label for="urineleukocyteesterase" class="form-label">Urine Leukocyte Esterase</label>
+                                <select class="form-select form-select-sm" id="urineleukocyteesterase" name="urineleukocyteesterase" required>
+                                    <option value="0">Negative</option>
+                                    <option value="1">Positive</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Urinary Nitrite -->
+                            <div class="mb-3">
+                                <label for="urinarynitrite" class="form-label">Urinary Nitrite</label>
+                                <select class="form-select form-select-sm" id="urinarynitrite" name="urinarynitrite" required>
+                                    <option value="0">Negative</option>
+                                    <option value="1">Positive</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Hydronephrosis -->
+                            <div class="mb-3">
+                                <label for="hydronephrosis" class="form-label">Hydronephrosis</label>
+                                <select class="form-select form-select-sm" id="hydronephrosis" name="hydronephrosis" required>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            
+                            <!-- WBC Count -->
+                            <div class="variable-slider mb-3">
+                                <label for="whitebloodcellcount" class="form-label d-flex justify-content-between">
+                                    <span>WBC Count</span>
+                                    <span class="current-value" id="wbcValue">8.5</span>
+                                </label>
+                                <input type="range" class="form-range" id="whitebloodcellcount" name="whitebloodcellcount" min="3" max="20" step="0.1" value="8.5" oninput="document.getElementById('wbcValue').textContent = this.value">
+                            </div>
+                            
+                            <!-- Occult Blood in Urine -->
+                            <div class="mb-3">
+                                <label for="occultbloodinurine" class="form-label">Occult Blood in Urine</label>
+                                <select class="form-select form-select-sm" id="occultbloodinurine" name="occultbloodinurine" required>
+                                    <option value="0">Negative</option>
+                                    <option value="1">Positive</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetForm()">Reset</button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="calculateRisk()">Calculate Risk</button>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-3 example-buttons">
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="fillExampleData('low')">Low Risk</button>
+                                <button type="button" class="btn btn-sm btn-outline-warning" onclick="fillExampleData('moderate')">Moderate</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="fillExampleData('high')">High Risk</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Results and Visualization (2/3) -->
+            <div class="col-md-8 col-lg-9">
+                <div class="card shadow">
+                    <div class="card-header bg-light">
+                        <ul class="nav nav-tabs card-header-tabs nav-fill" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab" aria-controls="risk" aria-selected="true">Risk Assessment</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="model-tab" data-bs-toggle="tab" data-bs-target="#model" type="button" role="tab" aria-controls="model" aria-selected="false">Model Performance</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="resultTabsContent">
+                            <!-- Risk Assessment Tab -->
+                            <div class="tab-pane fade show active" id="risk" role="tabpanel" aria-labelledby="risk-tab">
+                                <div id="results" style="display: none;">
+                                    <h3 class="text-center mb-4">UTI Risk Assessment Results</h3>
+                                    
+                                    <!-- 95% Confidence Interval -->
+                                    <div class="confidence-interval-container mb-4">
+                                        <h5 class="text-center">95% Confidence Interval</h5>
+                                        <div class="probability-scale">
+                                            <div class="scale-line"></div>
+                                            <div class="scale-markers">
+                                                <span>0.00</span>
+                                                <span>0.25</span>
+                                                <span>0.50</span>
+                                                <span>0.75</span>
+                                                <span>1.00</span>
+                                            </div>
+                                            <div id="confidence-interval-marker" class="ci-marker">
+                                                <div class="ci-line"></div>
+                                                <div class="ci-point"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="result-box text-center p-3 mb-3">
+                                                <h4>UTI Risk Probability</h4>
+                                                <div id="riskProbability" class="display-4 fw-bold text-primary"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="result-box text-center p-3 mb-3">
+                                                <h4>Risk Category</h4>
+                                                <div id="riskCategory" class="display-4 fw-bold"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="progress mt-3 mb-3" style="height: 30px;">
+                                        <div id="riskProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    
+                                    <div class="alert mt-3">
+                                        <h5>Clinical Interpretation:</h5>
+                                        <p id="interpretation"></p>
+                                    </div>
+                                    
+                                    <!-- UTI Related Animation/Visual -->
+                                    <div class="uti-visuals mt-4">
+                                        <h5 class="text-center mb-3">UTI Risk Factors Visualization</h5>
+                                        <div class="uti-animation-container">
+                                            <!-- Kidney Animation -->
+                                            <div class="organ-container">
+                                                <div class="organ kidney" id="kidneyAnimation">
+                                                    <i class="fas fa-kidneys fa-3x"></i>
+                                                    <div class="pulse-circle"></div>
+                                                </div>
+                                                <div class="organ-label">Kidneys</div>
+                                            </div>
+                                            
+                                            <!-- Bladder Animation -->
+                                            <div class="organ-container">
+                                                <div class="organ bladder" id="bladderAnimation">
+                                                    <svg viewBox="0 0 100 100" style="width: 60px; height: 60px; fill: currentColor;">
+                                                        <path d="M50,10 C25,10 10,40 10,60 C10,90 40,100 50,100 C60,100 90,90 90,60 C90,40 75,10 50,10 Z M50,90 C45,90 20,85 20,60 C20,45 30,20 50,20 C70,20 80,45 80,60 C80,85 55,90 50,90 Z"></path>
+                                                    </svg>
+                                                    <div class="bacteria bacteria-1"></div>
+                                                    <div class="bacteria bacteria-2"></div>
+                                                    <div class="bacteria bacteria-3"></div>
+                                                </div>
+                                                <div class="organ-label">Bladder</div>
+                                            </div>
+                                            
+                                            <!-- Urethra Animation -->
+                                            <div class="organ-container">
+                                                <div class="organ urethra" id="urethraAnimation">
+                                                    <svg viewBox="0 0 50 100" style="width: 30px; height: 60px; fill: currentColor;">
+                                                        <path d="M15,0 L15,90 Q25,100 35,90 L35,0 Z"></path>
+                                                    </svg>
+                                                    <div class="bacteria bacteria-4"></div>
+                                                    <div class="bacteria bacteria-5"></div>
+                                                </div>
+                                                <div class="organ-label">Urethra</div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-factors mt-4">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="factor-item">
+                                                        <i class="fas fa-bacterium text-danger"></i>
+                                                        <span>Bacterial Infection</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="factor-item">
+                                                        <i class="fas fa-fire text-warning"></i>
+                                                        <span>Inflammation</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="factor-item">
+                                                        <i class="fas fa-thermometer-half text-primary"></i>
+                                                        <span>Immune Response</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="initialMessage" class="text-center my-5">
+                                    <div class="welcome-container">
+                                        <i class="fas fa-calculator fa-4x text-primary mb-3"></i>
+                                        <h4>UTI Risk Calculator</h4>
+                                        <p class="text-muted">Please input patient data in the left panel and click "Calculate Risk" to view results</p>
+                                        <div class="mt-4">
+                                            <p><i class="fas fa-info-circle text-info"></i> This calculator uses a LASSO regression model to predict UTI risk based on clinical parameters</p>
+                                            <p><i class="fas fa-chart-line text-success"></i> Model Performance: AUC = 0.8013 (95% CI: 0.767-0.835)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Model Performance Tab -->
+                            <div class="tab-pane fade" id="model" role="tabpanel" aria-labelledby="model-tab">
+                                <h4 class="mb-3">Model Performance Metrics</h4>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>Validation Set (95% CI)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AUC</td>
+                                            <td>0.8013 (0.767-0.835)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Accuracy</td>
+                                            <td>0.7600 </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sensitivity</td>
+                                            <td>0.7353 </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Specificity</td>
+                                            <td>0.7622 </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="alert alert-info mt-4">
+                                    <h5>About this Calculator:</h5>
+                                    <p>This calculator uses a LASSO regression model developed from clinical data to predict the risk of Urinary Tract Infection (UTI).</p>
+                                    <p>The model has been validated and shows good discrimination with an AUC of 0.8013 (95% CI: 0.767-0.835) in the validation set.</p>
+                                    <p><strong>Note:</strong> This calculator is intended for clinical reference only and should not replace clinical judgment or standard diagnostic procedures.</p>
+                                </div>
+                                
+                                <div class="model-process mt-4">
+                                    <h5>Development Process:</h5>
+                                    <div class="process-flow">
+                                        <div class="process-step">
+                                            <div class="step-icon">
+                                                <i class="fas fa-database"></i>
+                                            </div>
+                                            <div class="step-text">Data Collection</div>
+                                        </div>
+                                        <div class="process-arrow">→</div>
+                                        <div class="process-step">
+                                            <div class="step-icon">
+                                                <i class="fas fa-broom"></i>
+                                            </div>
+                                            <div class="step-text">Preprocessing</div>
+                                        </div>
+                                        <div class="process-arrow">→</div>
+                                        <div class="process-step">
+                                            <div class="step-icon">
+                                                <i class="fas fa-brain"></i>
+                                            </div>
+                                            <div class="step-text">Model Training</div>
+                                        </div>
+                                        <div class="process-arrow">→</div>
+                                        <div class="process-step">
+                                            <div class="step-icon">
+                                                <i class="fas fa-check-double"></i>
+                                            </div>
+                                            <div class="step-text">Validation</div>
+                                        </div>
+                                        <div class="process-arrow">→</div>
+                                        <div class="process-step">
+                                            <div class="step-icon">
+                                                <i class="fas fa-calculator"></i>
+                                            </div>
+                                            <div class="step-text">Implementation</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 mb-3">
+        <div class="container text-center">
+            <p class="text-muted">© 2025 Dynamic UTI Risk Calculator. For research and educational purposes only.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script>
+        // --- START OF INLINED SCRIPT ---
+        
+        // LASSO Model Coefficients
+        const modelCoefficients = {
+            "intercept": -2.0126,
+            "age": 0.1963, "sex": 0.1864, "BMI": 0.2001, "NPAR": 0.1875,
+            "urineleukocyteesterase": 0.7971, "urinarynitrite": 0.3497,
+            "hydronephrosis": -0.2556, "whitebloodcellcount": -0.1932,
+            "occultbloodinurine": 0.0
+        };
+
+        // Standardization parameters
+        const standardization = {
+            "age": { mean: 55.0, std: 15.2 }, "BMI": { mean: 24.3, std: 3.5 },
+            "NPAR": { mean: 1.2, std: 0.8 }, "whitebloodcellcount": { mean: 8.5, std: 2.9 }
+        };
+
+        console.log("UTI Risk Calculator script loaded - Final Inline Version");
+
+        function calculateRisk() {
+            try {
+                console.log("calculateRisk() called");
+                
+                const resultsElement = document.getElementById('results');
+                if (!resultsElement) {
+                    alert("Fatal Error: Result display element not found.");
+                    return;
+                }
+                
+                // Get form values
+                const age = parseFloat(document.getElementById('age').value);
+                const sex = parseInt(document.getElementById('sex').value);
+                const bmi = parseFloat(document.getElementById('bmi').value);
+                const npar = parseFloat(document.getElementById('npar').value);
+                const urineleukocyteesterase = parseInt(document.getElementById('urineleukocyteesterase').value);
+                const urinarynitrite = parseInt(document.getElementById('urinarynitrite').value);
+                const hydronephrosis = parseInt(document.getElementById('hydronephrosis').value);
+                const whitebloodcellcount = parseFloat(document.getElementById('whitebloodcellcount').value);
+
+                // Standardize
+                const standardizedAge = (age - standardization.age.mean) / standardization.age.std;
+                const standardizedBMI = (bmi - standardization.BMI.mean) / standardization.BMI.std;
+                const standardizedNPAR = (npar - standardization.NPAR.mean) / standardization.NPAR.std;
+                const standardizedWBC = (whitebloodcellcount - standardization.whitebloodcellcount.mean) / standardization.whitebloodcellcount.std;
+
+                // Calculate logit
+                let logit = modelCoefficients.intercept +
+                            (modelCoefficients.age * standardizedAge) +
+                            (modelCoefficients.sex * sex) +
+                            (modelCoefficients.BMI * standardizedBMI) +
+                            (modelCoefficients.NPAR * standardizedNPAR) +
+                            (modelCoefficients.urineleukocyteesterase * urineleukocyteesterase) +
+                            (modelCoefficients.urinarynitrite * urinarynitrite) +
+                            (modelCoefficients.hydronephrosis * hydronephrosis) +
+                            (modelCoefficients.whitebloodcellcount * standardizedWBC);
+                
+                const probability = 1 / (1 + Math.exp(-logit));
+                const confidenceInterval = calculateConfidenceInterval(probability);
+                
+                displayResults(probability, confidenceInterval);
+                animateUTIVisuals(probability);
+            } catch (err) {
+                console.error("Error in calculateRisk:", err);
+                alert("Calculation Error: " + err.message);
+            }
+        }
+
+        function fillExampleData(riskLevel) {
+            console.log(`fillExampleData('${riskLevel}') called`);
+            switch(riskLevel) {
+                case 'low':
+                    document.getElementById('age').value = 35;
+                    document.getElementById('sex').value = 0;
+                    document.getElementById('bmi').value = 22.5;
+                    document.getElementById('npar').value = 0.8;
+                    document.getElementById('urineleukocyteesterase').value = 0;
+                    document.getElementById('urinarynitrite').value = 0;
+                    document.getElementById('hydronephrosis').value = 0;
+                    document.getElementById('whitebloodcellcount').value = 7.5;
+                    break;
+                case 'moderate':
+                    document.getElementById('age').value = 65;
+                    document.getElementById('sex').value = 1;
+                    document.getElementById('bmi').value = 28.4;
+                    document.getElementById('npar').value = 1.5;
+                    document.getElementById('urineleukocyteesterase').value = 1;
+                    document.getElementById('urinarynitrite').value = 0;
+                    document.getElementById('hydronephrosis').value = 0;
+                    document.getElementById('whitebloodcellcount').value = 9.8;
+                    break;
+                case 'high':
+                    document.getElementById('age').value = 82;
+                    document.getElementById('sex').value = 1;
+                    document.getElementById('bmi').value = 30.5;
+                    document.getElementById('npar').value = 3.8;
+                    document.getElementById('urineleukocyteesterase').value = 1;
+                    document.getElementById('urinarynitrite').value = 1;
+                    document.getElementById('hydronephrosis').value = 0;
+                    document.getElementById('whitebloodcellcount').value = 6.5;
+                    break;
+            }
+            // Update slider display values
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                const valueElement = document.getElementById(slider.id + 'Value');
+                if (valueElement) valueElement.textContent = slider.value;
+            });
+            calculateRisk(); // Calculate after filling data
+        }
+
+        function resetForm() {
+            console.log("resetForm() called");
+            document.getElementById('riskForm').reset();
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('initialMessage').style.display = 'block';
+            
+            document.getElementById('ageValue').textContent = "55";
+            document.getElementById('bmiValue').textContent = "24.3";
+            document.getElementById('nparValue').textContent = "1.2";
+            document.getElementById('wbcValue').textContent = "8.5";
+        }
+
+        function calculateConfidenceInterval(probability) {
+            const margin = (probability > 0.8 || probability < 0.2) ? 0.1 : 0.15;
+            return {
+                lower: Math.max(0, probability - margin),
+                upper: Math.min(1, probability + margin),
+                point: probability
+            };
+        }
+
+        function animateUTIVisuals(probability) {
+            const kidneyElement = document.getElementById('kidneyAnimation');
+            if (!kidneyElement) return;
+            
+            let duration = '3s';
+            if (probability >= 0.6) duration = '1s';
+            else if (probability >= 0.3) duration = '2s';
+            kidneyElement.querySelector('.pulse-circle').style.animationDuration = duration;
+
+            document.querySelectorAll('.bacteria').forEach((b, i) => {
+                let show = false;
+                if (probability >= 0.6) show = true;
+                else if (probability >= 0.3) show = (i <= 3);
+                else show = (i <= 1);
+                b.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        function displayResults(probability, ci) {
+            const probabilityPercent = (probability * 100).toFixed(1);
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('initialMessage').style.display = 'none';
+            
+            document.getElementById('riskProbability').textContent = `${probabilityPercent}%`;
+            
+            const categoryElement = document.getElementById('riskCategory');
+            const interpretationElement = document.getElementById('interpretation');
+            const progressBar = document.getElementById('riskProgressBar');
+            
+            let riskCategory, barClass, interpretation;
+            if (probability < 0.3) {
+                riskCategory = 'Low Risk'; barClass = 'risk-progress-low';
+                interpretation = 'Patient has a low risk of UTI. Monitor and follow up if symptoms persist.';
+            } else if (probability < 0.6) {
+                riskCategory = 'Moderate Risk'; barClass = 'risk-progress-moderate';
+                interpretation = 'Patient has a moderate risk of UTI. Consider further diagnostic testing and close monitoring.';
+                } else {
+                riskCategory = 'High Risk'; barClass = 'risk-progress-high';
+                interpretation = 'Patient has a high risk of UTI. Prompt diagnosis and treatment is recommended.';
+            }
+            
+            categoryElement.textContent = riskCategory;
+            categoryElement.className = `display-4 fw-bold risk-${riskCategory.split(' ')[0].toLowerCase()}`;
+            interpretationElement.textContent = interpretation;
+            
+            progressBar.style.width = '0%';
+            progressBar.className = 'progress-bar ' + barClass;
+            setTimeout(() => {
+                progressBar.style.width = `${probabilityPercent}%`;
+            }, 100);
+
+            // Update CI display
+            const ciMarker = document.getElementById('confidence-interval-marker');
+            ciMarker.style.left = `${ci.lower * 100}%`;
+            ciMarker.style.right = `${(1 - ci.upper) * 100}%`;
+            ciMarker.querySelector('.ci-point').style.left = `${((ci.point - ci.lower) / (ci.upper - ci.lower)) * 100}%`;
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        // --- END OF INLINED SCRIPT ---
+    </script>
+</body>
+</html> 

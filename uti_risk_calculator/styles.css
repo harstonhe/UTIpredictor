@@ -1,0 +1,522 @@
+/* General Body and Theme Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5; /* Light grey background */
+    color: #333;
+}
+
+.container-fluid {
+    max-width: 1600px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    transition: all 0.3s ease-in-out;
+}
+
+.card.shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.header-card {
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    color: white;
+}
+
+.header-card h2 {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Form and Input Styles */
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-range::-webkit-slider-thumb {
+    background-color: #0d6efd;
+}
+
+.form-range::-moz-range-thumb {
+    background-color: #0d6efd;
+}
+
+.form-select, .form-control {
+    border-radius: 6px;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: scale(1.05);
+}
+
+.example-buttons .btn {
+    flex-grow: 1;
+    margin: 0 4px;
+}
+
+/* Results and Visualization Styles */
+.welcome-container {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+.result-box {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.display-4 {
+    font-weight: 700 !important;
+}
+
+/* Risk Level Colors */
+.risk-low { color: #198754; }
+.risk-moderate { color: #ffc107; }
+.risk-high { color: #dc3545; }
+
+/* Progress Bar as a Gauge - a more modern approach */
+#riskProgressBar {
+    transition: width 1s ease-in-out;
+}
+.risk-progress-low { background-color: #198754; }
+.risk-progress-moderate { background-color: #ffc107; }
+.risk-progress-high { background-color: #dc3545; }
+
+/* Clinical Interpretation Alert Box */
+.alert {
+    border-radius: 8px;
+    border-left-width: 5px;
+}
+.alert-low { border-left-color: #198754; background-color: #e9f5ec; }
+.alert-moderate { border-left-color: #ffc107; background-color: #fff8e1; }
+.alert-high { border-left-color: #dc3545; background-color: #fdeeee; }
+
+/* UTI Organ Animation */
+.uti-animation-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.organ-container {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.organ {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 100px;
+}
+
+.organ-label {
+    font-weight: 600;
+    color: #555;
+}
+
+/* Bacteria Animation */
+.bacteria {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #dc3545;
+    border-radius: 50%;
+    opacity: 0;
+    animation: move-bacteria 4s infinite linear;
+    z-index: 1;
+    display: none; /* Hidden by default */
+}
+
+.bacteria-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.bacteria-2 { top: 80%; left: 20%; animation-delay: 1s; }
+.bacteria-3 { top: 50%; left: 80%; animation-delay: 2s; }
+.bacteria-4 { top: 30%; left: 60%; animation-delay: 3s; }
+.bacteria-5 { top: 60%; left: 40%; animation-delay: 0.5s; }
+
+@keyframes move-bacteria {
+    0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+    25% { opacity: 0.8; }
+    50% { transform: translate(20px, 20px) scale(1); }
+    75% { opacity: 0.8; }
+    100% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+}
+
+/* Risk-based animation triggers */
+.risk-low .bacteria { display: none; } /* No bacteria for low risk */
+.risk-moderate .bacteria:nth-child(-n+3) { display: block; } /* 3 bacteria for moderate */
+.risk-high .bacteria { display: block; } /* All bacteria for high risk */
+
+/* Confidence Interval Scale */
+.probability-scale {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+}
+.scale-line {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #198754, #ffc107, #dc3545);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+.scale-markers {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    top: calc(50% + 10px);
+    font-size: 0.8rem;
+    color: #666;
+}
+.ci-marker {
+    position: absolute;
+    top: 50%;
+    height: 20px;
+    transform: translateY(-50%);
+    transition: all 0.5s ease-in-out;
+}
+.ci-line {
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+}
+.ci-point {
+    width: 14px;
+    height: 14px;
+    background-color: #0d6efd;
+    border: 3px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    transition: left 0.5s ease-in-out;
+}
+
+/* Footer Styles */
+footer {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+/* Compact Layout Styles */
+.compact-header {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+}
+
+.compact-body {
+    padding: 15px;
+}
+
+.compact-form .form-label {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+/* Variable slider styles */
+.variable-slider {
+    position: relative;
+}
+
+.min-value, .max-value, .current-value {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.current-value {
+    font-weight: bold;
+    color: #4a89dc;
+    background-color: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.slider-marks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Coefficient bar chart styles */
+.coef-bar {
+    height: 15px;
+    background-color: #4a89dc;
+    border-radius: 3px;
+}
+
+.coef-bar.negative {
+    background-color: #dc3545;
+}
+
+/* Tab styles */
+.nav-tabs .nav-link {
+    color: #495057;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4a89dc;
+    font-weight: 600;
+}
+
+/* Example buttons styles */
+.example-buttons {
+    gap: 5px;
+}
+
+.example-buttons .btn {
+    flex: 1;
+    font-size: 0.8rem;
+}
+
+/* UTI Visualization Styles */
+.uti-visuals {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+/* Kidney Animation */
+.kidney {
+    color: #e74c3c;
+}
+
+.pulse-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgba(231, 76, 60, 0.1);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+/* Bladder Animation */
+.bladder {
+    color: #3498db;
+}
+
+.bacteria-1 {
+    top: 30%;
+    left: 30%;
+    animation: float 3s infinite ease-in-out;
+}
+
+.bacteria-2 {
+    top: 45%;
+    left: 60%;
+    animation: float 4s infinite ease-in-out 1s;
+}
+
+.bacteria-3 {
+    top: 65%;
+    left: 40%;
+    animation: float 3.5s infinite ease-in-out 0.5s;
+}
+
+.bacteria-4 {
+    top: 40%;
+    left: 50%;
+    animation: float 3s infinite ease-in-out 1.5s;
+}
+
+.bacteria-5 {
+    top: 60%;
+    left: 30%;
+    animation: float 3.5s infinite ease-in-out 0.7s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-5px) translateX(5px);
+    }
+    50% {
+        transform: translateY(0) translateX(10px);
+    }
+    75% {
+        transform: translateY(5px) translateX(5px);
+    }
+    100% {
+        transform: translateY(0) translateX(0);
+    }
+}
+
+/* Urethra Animation */
+.urethra {
+    /* width: 120px; -> Moved to .organ */
+    /* height: 100px; -> Moved to .organ */
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.urethra-line {
+    width: 80%;
+    height: 8px;
+    background-color: #9b59b6;
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Risk Factors */
+.risk-factors {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.factor-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.factor-item i {
+    font-size: 1.2rem;
+}
+
+/* Model Process Styles */
+.process-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    text-align: center;
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #4a89dc;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.step-text {
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.process-arrow {
+    color: #6c757d;
+    margin: 0 5px;
+    font-size: 1.2rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .uti-animation-container {
+        flex-direction: column;
+        height: auto;
+        gap: 20px;
+    }
+    
+    .process-flow {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .process-arrow {
+        transform: rotate(90deg);
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .organ {
+        width: 80px;
+        height: 80px;
+    }
+} 

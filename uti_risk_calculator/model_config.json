@@ -1,0 +1,32 @@
+{
+  "modelCoefficients": {
+    "intercept": -2.0126,
+    "age": 0.1963,
+    "sex": 0.1864,
+    "BMI": 0.2001,
+    "NPAR": 0.1875,
+    "urineleukocyteesterase": 0.7971,
+    "urinarynitrite": 0.3497,
+    "hydronephrosis": -0.2556,
+    "whitebloodcellcount": -0.1932,
+    "occultbloodinurine": 0.0
+  },
+  "standardization": {
+    "age": {
+      "mean": 55.0,
+      "std": 15.2
+    },
+    "BMI": {
+      "mean": 24.3,
+      "std": 3.5
+    },
+    "NPAR": {
+      "mean": 1.2,
+      "std": 0.8
+    },
+    "whitebloodcellcount": {
+      "mean": 8.5,
+      "std": 2.9
+    }
+  }
+} 
